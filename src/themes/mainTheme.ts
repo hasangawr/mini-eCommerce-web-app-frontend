@@ -23,10 +23,12 @@ const mainTheme = createTheme({
       fontFamily: "Satoshi-Black",
       fontSize: "2.25rem",
       textTransform: "uppercase",
+      letterSpacing: "0.15em",
     },
     h2: {
       fontFamily: "Satoshi-Bold",
       fontSize: "1.188rem",
+      textTransform: "capitalize",
     },
     body1: {
       fontFamily: "Satoshi-Medium",
