@@ -1,21 +1,23 @@
 import { Box, Divider } from "@mui/material";
 import TableHead from "./TableHead";
 import TableRow from "./TableRow";
+import { Product } from "../redux/slices/productsSlice";
+import React from "react";
 
-const ProductsTable = () => {
+interface IProductsTableProps {
+  products: Product[];
+}
+
+const ProductsTable: React.FC<IProductsTableProps> = (props) => {
   return (
     <Box sx={{ margin: "0 2.375rem" }}>
       <TableHead />
-      <TableRow />
-      <Divider sx={{ marginBottom: "2rem" }} />
-      <TableRow />
-      <Divider sx={{ marginBottom: "2rem" }} />
-      <TableRow />
-      <Divider sx={{ marginBottom: "2rem" }} />
-      <TableRow />
-      <Divider sx={{ marginBottom: "2rem" }} />
-      <TableRow />
-      <Divider sx={{ marginBottom: "2rem" }} />
+      {props.products.map((product) => (
+        <>
+          <TableRow product={product} />
+          <Divider sx={{ marginBottom: "2rem" }} />
+        </>
+      ))}
     </Box>
   );
 };

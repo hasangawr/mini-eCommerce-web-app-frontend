@@ -1,25 +1,40 @@
 import { Grid2, Typography, useTheme } from "@mui/material";
 import ProductIcons from "./ProductIcons";
+import { Product } from "../redux/slices/productsSlice";
+import { imagefrombuffer } from "imagefrombuffer";
 
-const TableRow = () => {
+interface ITableRowProps {
+  product: Product;
+}
+
+const TableRow: React.FC<ITableRowProps> = (props) => {
   const theme = useTheme();
+
+  // function bufferToBase64(buffer: number[]): string {
+  //   return btoa(String.fromCharCode(...new Uint8Array(buffer)));
+  // }
+
+  // const base64Image = bufferToBase64(props.product.images[0].data.data);
 
   return (
     <Grid2 container spacing={2} marginBottom="1.75rem">
       <Grid2 size={2}>
         <Typography variant="body1" color={theme.palette.grayPrimary.main}>
-          #CA25
+          {props.product.sku}
         </Typography>
       </Grid2>
       <Grid2 size={2}>
         <img
-          src="../../assets/product-img-1.png"
+          src={imagefrombuffer({
+            type: props.product.images[0].data.type,
+            data: props.product.images[0].data.data,
+          })}
           style={{ height: "66px", width: "66px" }}
         />
       </Grid2>
       <Grid2 size={2}>
         <Typography variant="body1" color={theme.palette.blackPrimary.main}>
-          Product-Name
+          {props.product.name}
         </Typography>
       </Grid2>
       <Grid2 size={3}>
