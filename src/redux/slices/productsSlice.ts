@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import { replaceLeadingHash } from "../../utils/util";
 
 interface IProductImage {
   data: { type: string; data: number[] };
@@ -39,12 +40,16 @@ export const fetchProducts = createAsyncThunk(
 
 export const addProduct = createAsyncThunk(
   "products/addProduct",
-  async (product: Product) => {
-    const response = await axios.post<Product>(
+  async (product: FormData) => {
+    await axios.post(
       `${import.meta.env.VITE_API_BASE_URL}/api/products`,
-      product
+      product,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
     );
-    return response.data;
   }
 );
 
@@ -62,10 +67,11 @@ export const editProduct = createAsyncThunk(
 export const deleteProduct = createAsyncThunk(
   "products/deleteProduct",
   async (id: string) => {
-    await axios.delete(
-      `${import.meta.env.VITE_API_BASE_URL}/api/products/${id}`
+    const _id = replaceLeadingHash(id);
+    const response = await axios.delete(
+      `${import.meta.env.VITE_API_BASE_URL}/api/products/${_id}`
     );
-    return id;
+    return response.data.id;
   }
 );
 
@@ -99,6 +105,15 @@ const productsSlice = createSlice({
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch products";
+      })
+      .addCase(deleteProduct.fulfilled, (state, action) => {
+        const productSku = action.payload;
+        state.items = state.items.filter(
+          (product) => product.sku !== productSku
+        );
+      })
+      .addCase(deleteProduct.rejected, (state, action) => {
+        state.error = action.error.message || "Failed to delete product";
       });
   },
 });

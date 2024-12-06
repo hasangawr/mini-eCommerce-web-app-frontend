@@ -1,154 +1,115 @@
-import * as React from "react";
-import Button from "@mui/material/Button";
-import Avatar from "@mui/material/Avatar";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
-import DialogTitle from "@mui/material/DialogTitle";
-import Dialog from "@mui/material/Dialog";
-import PersonIcon from "@mui/icons-material/Person";
-import AddIcon from "@mui/icons-material/Add";
-//import Typography from "@mui/material/Typography";
-import { blue } from "@mui/material/colors";
-import { Box, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Stack,
+  Typography,
+  useTheme,
+} from "@mui/material";
+import { Dispatch, SetStateAction } from "react";
+import { useDispatch } from "react-redux";
+import { deleteProduct, fetchProducts } from "../redux/slices/productsSlice";
+import { AppDispatch } from "../redux/store";
 
-const emails = ["username@gmail.com", "user02@gmail.com"];
-
-export interface DeletePopupProps {
+interface IDeletePopupProps {
+  id: string;
   open: boolean;
-  selectedValue: string;
-  onClose: (value: string) => void;
+  setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function DeletePopup(props: DeletePopupProps) {
-  const { onClose, selectedValue, open } = props;
+const DeletePopup: React.FC<IDeletePopupProps> = (props) => {
+  const theme = useTheme();
+  const dispatch = useDispatch<AppDispatch>();
 
   const handleClose = () => {
-    onClose(selectedValue);
+    props.setOpen(false);
   };
 
-  const handleListItemClick = (value: string) => {
-    onClose(value);
+  const handleDelete = async () => {
+    await dispatch(deleteProduct(props.id))
+      .unwrap()
+      .then(() => {
+        dispatch(fetchProducts());
+      });
+    handleClose();
   };
 
   return (
-    <Dialog onClose={handleClose} open={open}>
-      <Box
-        sx={{
-          maxWidth: "40rem",
-          minHeight: "22.125rem",
-        }}
-      >
-        <Box
-          sx={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "space-around",
-            marginTop: "3.875rem",
-          }}
-        >
-          <img src="../../assets/alert.svg" style={{ display: "flex" }} />
+    <Dialog
+      sx={{ "& .MuiDialog-paper": { width: "80%", maxHeight: 435 } }}
+      maxWidth="xs"
+      open={props.open}
+    >
+      <DialogContent>
+        <Box display="flex" justifyContent="center" marginTop="2.625rem">
+          <img src="../../assets/alert.svg" />
         </Box>
-        <Box
-          sx={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "space-around",
-            marginTop: "0.853rem",
-          }}
-        >
+        <Box display="flex" justifyContent="center" marginTop="0.875rem">
           <Typography variant="h2" fontSize="1.5rem">
             ARE YOU SURE?
           </Typography>
         </Box>
         <Box
-          sx={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "space-around",
-            marginTop: "0.853rem",
-          }}
+          display="flex"
+          justifyContent="center"
+          marginTop="0.875rem"
+          textAlign="center"
         >
-          <Typography variant="h2" fontSize="1.2rem">
+          <Typography
+            variant="h2"
+            fontSize="1.18rem"
+            marginLeft="2.688rem"
+            marginRight="2.688rem"
+          >
             You will not be able to undo this action if you proceed!
           </Typography>
         </Box>
-
-        <Box
-          sx={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "space-around",
-            marginTop: "2rem",
-          }}
-        >
-          <Stack direction="row" spacing={2}>
-            <Button variant="outlined">Cancel</Button>
-            <Button variant="contained">Delete</Button>
-          </Stack>
-        </Box>
-      </Box>
-      {/* <DialogTitle>Set backup account</DialogTitle>
-      <List sx={{ pt: 0 }}>
-        {emails.map((email) => (
-          <ListItem disablePadding key={email}>
-            <ListItemButton onClick={() => handleListItemClick(email)}>
-              <ListItemAvatar>
-                <Avatar sx={{ bgcolor: blue[100], color: blue[600] }}>
-                  <PersonIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={email} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-        <ListItem disablePadding>
-          <ListItemButton
+      </DialogContent>
+      <DialogActions
+        sx={{ justifyContent: "center", marginBottom: "3.375rem" }}
+      >
+        <Stack spacing="1.563rem" direction="row">
+          <Button
             autoFocus
-            onClick={() => handleListItemClick("addAccount")}
+            onClick={() => {
+              handleClose();
+            }}
+            variant="outlined"
+            sx={{
+              color: theme.palette.bluePrimary.main,
+              padding: "0.813rem 1.563rem",
+            }}
           >
-            <ListItemAvatar>
-              <Avatar>
-                <AddIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText primary="Add account" />
-          </ListItemButton>
-        </ListItem>
-      </List> */}
+            <Typography
+              variant="h2"
+              fontSize="1.188rem"
+              color={theme.palette.blackPrimary.main}
+            >
+              Cancel
+            </Typography>
+          </Button>
+          <Button
+            onClick={handleDelete}
+            variant="contained"
+            sx={{
+              backgroundColor: theme.palette.bluePrimary.main,
+              padding: "0.813rem 1.563rem",
+            }}
+          >
+            <Typography
+              variant="h2"
+              fontSize="1.188rem"
+              color={theme.palette.background.default}
+            >
+              Delete
+            </Typography>
+          </Button>
+        </Stack>
+      </DialogActions>
     </Dialog>
   );
-}
+};
 
-// export default function DeletePopup() {
-//   const [open, setOpen] = React.useState(false);
-//   const [selectedValue, setSelectedValue] = React.useState(emails[1]);
-
-//   const handleClickOpen = () => {
-//     setOpen(true);
-//   };
-
-//   const handleClose = (value: string) => {
-//     setOpen(false);
-//     setSelectedValue(value);
-//   };
-
-//   return (
-//     <div>
-//       <Typography variant="subtitle1" component="div">
-//         Selected: {selectedValue}
-//       </Typography>
-//       <br />
-//       <Button variant="outlined" onClick={handleClickOpen}>
-//         Open simple dialog
-//       </Button>
-//       <SimpleDialog
-//         selectedValue={selectedValue}
-//         open={open}
-//         onClose={handleClose}
-//       />
-//     </div>
-//   );
-// }
+export default DeletePopup;

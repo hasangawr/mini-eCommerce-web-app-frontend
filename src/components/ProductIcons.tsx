@@ -1,27 +1,22 @@
 import { IconButton, Stack } from "@mui/material";
+import { useState } from "react";
 import DeletePopup from "./DeletePopup";
-import React from "react";
-import SimpleDialog from "./DeletePopup";
 
-const ProductIcons = () => {
-  const emails = ["username@gmail.com", "user02@gmail.com"];
+interface IProductIconsProps {
+  id: string;
+}
 
-  const [open, setOpen] = React.useState(false);
-  const [selectedValue, setSelectedValue] = React.useState(emails[1]);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = (value: string) => {
-    setOpen(false);
-    setSelectedValue(value);
-  };
+const ProductIcons: React.FC<IProductIconsProps> = (props) => {
+  const [open, setOpen] = useState<boolean>(false);
 
   return (
     <>
       <Stack direction="row" gap={1}>
-        <IconButton onClick={handleClickOpen}>
+        <IconButton
+          onClick={() => {
+            setOpen(true);
+          }}
+        >
           <img src="../../assets/delete-icon.svg" />
         </IconButton>
         <IconButton>
@@ -31,11 +26,7 @@ const ProductIcons = () => {
           <img src="../../assets/star.svg" />
         </IconButton>
       </Stack>
-      <SimpleDialog
-        selectedValue={selectedValue}
-        open={open}
-        onClose={handleClose}
-      />
+      {<DeletePopup id={props.id} open={open} setOpen={setOpen} />}
     </>
   );
 };

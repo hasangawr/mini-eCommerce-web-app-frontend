@@ -22,6 +22,7 @@ const SearchBar = () => {
             color: theme.palette.graySecondary.main,
             padding: "0.9rem 4.2rem",
           }}
+          href="/new-product"
         >
           <Typography variant="h2">New Product</Typography>
         </Button>

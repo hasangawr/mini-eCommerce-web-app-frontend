@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 
 const MainLayout = () => {
   return (
-    <Container maxWidth="xl" sx={{ paddingTop: "2rem", paddingBottom: "2rem" }}>
+    <Container maxWidth="lg" sx={{ paddingTop: "2rem", paddingBottom: "2rem" }}>
       <MainAppBar />
       <Outlet />
     </Container>
