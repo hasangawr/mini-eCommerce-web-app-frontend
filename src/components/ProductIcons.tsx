@@ -1,9 +1,10 @@
 import { IconButton, Stack } from "@mui/material";
 import { useState } from "react";
 import DeletePopup from "./DeletePopup";
+import { replaceLeadingHash } from "../utils/util";
 
 interface IProductIconsProps {
-  id: string;
+  sku: string;
 }
 
 const ProductIcons: React.FC<IProductIconsProps> = (props) => {
@@ -19,14 +20,14 @@ const ProductIcons: React.FC<IProductIconsProps> = (props) => {
         >
           <img src="../../assets/delete-icon.svg" />
         </IconButton>
-        <IconButton>
+        <IconButton href={`/edit-product/${replaceLeadingHash(props.sku)}`}>
           <img src="../../assets/edit-icon.svg" />
         </IconButton>
         <IconButton>
           <img src="../../assets/star.svg" />
         </IconButton>
       </Stack>
-      {<DeletePopup id={props.id} open={open} setOpen={setOpen} />}
+      {<DeletePopup sku={props.sku} open={open} setOpen={setOpen} />}
     </>
   );
 };

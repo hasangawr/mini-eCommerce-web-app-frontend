@@ -2,8 +2,8 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { replaceLeadingHash } from "../../utils/util";
 
-interface IProductImage {
-  data: { type: string; data: number[] };
+export interface IProductImage {
+  data: { type: string; data: ArrayBuffer };
   contentType: string;
 }
 
@@ -16,17 +16,24 @@ export interface Product {
   description: string;
 }
 
-interface ProductsState {
+export interface ProductsState {
   items: Product[];
   loading: boolean;
   error: string | null;
+  selectedProduct: Product | null;
 }
 
 const initialState: ProductsState = {
   items: [],
   loading: false,
   error: null,
+  selectedProduct: null,
 };
+
+export interface ProductUpdateActionProps {
+  product: FormData;
+  productId: string;
+}
 
 export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
@@ -55,10 +62,11 @@ export const addProduct = createAsyncThunk(
 
 export const editProduct = createAsyncThunk(
   "products/editProduct",
-  async (product: Product) => {
+  async (productProps: ProductUpdateActionProps) => {
+    const _id = replaceLeadingHash(productProps.productId);
     const response = await axios.put<Product>(
-      `${import.meta.env.VITE_API_BASE_URL}/api/products/${product.sku}`,
-      product
+      `${import.meta.env.VITE_API_BASE_URL}/api/products/${_id}`,
+      productProps.product
     );
     return response.data;
   }
@@ -91,6 +99,17 @@ const productsSlice = createSlice({
     ) => {
       state.items = state.items.filter(action.payload);
     },
+    selectProduct: (state, action: PayloadAction<string>) => {
+      const productSku = action.payload;
+      const selectedProduct = state.items.find(
+        (product) => product.sku === productSku
+      );
+      if (selectedProduct) {
+        state.selectedProduct = { ...selectedProduct };
+      } else {
+        state.selectedProduct = null;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -118,5 +137,6 @@ const productsSlice = createSlice({
   },
 });
 
-export const { searchProducts, filterProducts } = productsSlice.actions;
+export const { searchProducts, filterProducts, selectProduct } =
+  productsSlice.actions;
 export default productsSlice.reducer;

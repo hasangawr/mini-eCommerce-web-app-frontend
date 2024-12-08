@@ -14,7 +14,7 @@ import { deleteProduct, fetchProducts } from "../redux/slices/productsSlice";
 import { AppDispatch } from "../redux/store";
 
 interface IDeletePopupProps {
-  id: string;
+  sku: string;
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }
@@ -28,7 +28,7 @@ const DeletePopup: React.FC<IDeletePopupProps> = (props) => {
   };
 
   const handleDelete = async () => {
-    await dispatch(deleteProduct(props.id))
+    await dispatch(deleteProduct(props.sku))
       .unwrap()
       .then(() => {
         dispatch(fetchProducts());

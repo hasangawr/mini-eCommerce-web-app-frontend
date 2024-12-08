@@ -14,8 +14,8 @@ const ProductsTable: React.FC<IProductsTableProps> = (props) => {
       <TableHead />
       {props.products.map((product) => (
         <>
-          <TableRow product={product} />
-          <Divider sx={{ marginBottom: "2rem" }} />
+          <TableRow product={product} key={product.id} />
+          <Divider sx={{ marginBottom: "2rem" }} key={product.id} />
         </>
       ))}
     </Box>

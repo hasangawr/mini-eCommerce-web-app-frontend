@@ -21,13 +21,13 @@ const Search = () => {
         placeholder="Search for products"
         fullWidth
         sx={{
-          "& .css-15f660w-MuiInputBase-root-MuiFilledInput-root": {
+          "& .css-1lcalf0-MuiInputBase-root-MuiFilledInput-root": {
             backgroundColor: "transparent",
           },
-          "& .css-15f660w-MuiInputBase-root-MuiFilledInput-root.Mui-focused": {
+          "& .css-1lcalf0-MuiInputBase-root-MuiFilledInput-root.Mui-focused": {
             backgroundColor: "transparent",
           },
-          "& .css-15f660w-MuiInputBase-root-MuiFilledInput-root:hover": {
+          "& .css-1lcalf0-MuiInputBase-root-MuiFilledInput-root:hover": {
             backgroundColor: "transparent",
           },
           "& input": {

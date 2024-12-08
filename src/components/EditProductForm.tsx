@@ -8,16 +8,22 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../redux/store";
-import { addProduct, fetchProducts } from "../redux/slices/productsSlice";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import {
+  editProduct,
+  fetchProducts,
+  IProductImage,
+  selectProduct,
+} from "../redux/slices/productsSlice";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 
-const ProductForm = () => {
+const EditProductForm = () => {
   const theme = useTheme();
-  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const { id } = useParams();
 
   const [sku, setSku] = useState<string>("");
   const [productName, setProductName] = useState<string>("");
@@ -25,6 +31,52 @@ const ProductForm = () => {
   const [description, setDescription] = useState<string>("");
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
+
+  const selectedProduct = useAppSelector(
+    (state) => state.products.selectedProduct
+  );
+
+  useEffect(() => {
+    const getSelectedProduct = async () => {
+      await dispatch(fetchProducts()).then(() => {
+        dispatch(selectProduct(id as string));
+      });
+    };
+
+    getSelectedProduct();
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    const convertImagestoFiles = (images: IProductImage[]) => {
+      const files = images.map((image, index) => {
+        const blob = new Blob([image.data.data], { type: image.contentType });
+        return new File([blob], `img${index}`, { type: image.contentType });
+      });
+
+      return files;
+    };
+
+    const loadImageFiles = (files: File[]) => {
+      const fileArray = Array.from(files);
+      setImages((prevImages) => [...prevImages, ...fileArray]);
+
+      // Generate image previews
+      const newPreviews = fileArray.map((file) => URL.createObjectURL(file));
+      setPreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
+    };
+
+    if (selectedProduct) {
+      if (selectedProduct.images.length !== 0) {
+        const files = convertImagestoFiles(selectedProduct.images);
+        loadImageFiles(files);
+      }
+
+      setSku(selectedProduct.sku);
+      setProductName(selectedProduct.name);
+      setQty(selectedProduct.quantity);
+      setDescription(selectedProduct.description);
+    }
+  }, [selectedProduct]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -47,11 +99,13 @@ const ProductForm = () => {
     images.forEach((image) => formData.append("images", image));
 
     try {
-      await dispatch(addProduct(formData)).unwrap();
+      await dispatch(
+        editProduct({ product: formData, productId: id as string })
+      ).unwrap();
       await dispatch(fetchProducts());
       navigate("/");
     } catch (error) {
-      console.error("Upload failed:", error);
+      console.error("Update failed:", error);
     }
   };
 
@@ -70,7 +124,17 @@ const ProductForm = () => {
                 maxHeight: "2.8rem",
                 width: "25rem",
               }}
+              slotProps={{
+                input: {
+                  sx: {
+                    backgroundColor: theme.palette.graySecondary.main,
+                    color: theme.palette.grayPrimary.main,
+                    fontSize: "0.875rem",
+                  },
+                },
+              }}
               variant="outlined"
+              value={sku}
               onChange={(e) => {
                 setSku(e.target.value);
               }}
@@ -90,7 +154,17 @@ const ProductForm = () => {
                 maxHeight: "2.8rem",
                 width: "25rem",
               }}
+              slotProps={{
+                input: {
+                  sx: {
+                    backgroundColor: theme.palette.graySecondary.main,
+                    color: theme.palette.grayPrimary.main,
+                    fontSize: "0.875rem",
+                  },
+                },
+              }}
               variant="outlined"
+              value={productName}
               onChange={(e) => {
                 setProductName(e.target.value);
               }}
@@ -109,7 +183,17 @@ const ProductForm = () => {
                 maxHeight: "2.8rem",
                 width: "25rem",
               }}
+              slotProps={{
+                input: {
+                  sx: {
+                    backgroundColor: theme.palette.graySecondary.main,
+                    color: theme.palette.grayPrimary.main,
+                    fontSize: "0.875rem",
+                  },
+                },
+              }}
               variant="outlined"
+              value={qty}
               onChange={(e) => {
                 setQty(Number(e.target.value));
               }}
@@ -143,9 +227,12 @@ const ProductForm = () => {
               input: {
                 sx: {
                   backgroundColor: theme.palette.graySecondary.main,
+                  color: theme.palette.grayPrimary.main,
+                  fontSize: "0.875rem",
                 },
               },
             }}
+            value={description}
             onChange={(e) => {
               setDescription(e.target.value);
             }}
@@ -217,7 +304,7 @@ const ProductForm = () => {
             }}
             onClick={handleSubmit}
           >
-            <Typography variant="h2">Add Product</Typography>
+            <Typography variant="h2">Save Changes</Typography>
           </Button>
         </Grid2>
       </Grid2>
@@ -225,4 +312,4 @@ const ProductForm = () => {
   );
 };
 
-export default ProductForm;
+export default EditProductForm;

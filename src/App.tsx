@@ -19,7 +19,7 @@ function App() {
           />
           <Route path="search-results" element={<SearchResultsPage />} />
           <Route path="new-product" element={<NewProductPage />} />
-          <Route path="edit-product" element={<EditProductPage />} />
+          <Route path="edit-product/:id" element={<EditProductPage />} />
         </Route>
       </Routes>
     </Router>
