@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import Title from "../components/Title";
 import SearchBar from "../components/SearchBar";
 import ProductsTable from "../components/ProductsTable";
@@ -22,7 +22,13 @@ const ProductsPage = () => {
     <Box sx={{ marginTop: "2.5rem" }}>
       <Title title="products" />
       <SearchBar />
-      <ProductsTable products={items} />
+      {loading ? (
+        <Box display="flex" justifyContent="center">
+          <CircularProgress />
+        </Box>
+      ) : (
+        <ProductsTable products={items} />
+      )}
     </Box>
   );
 };

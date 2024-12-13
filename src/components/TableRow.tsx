@@ -41,7 +41,10 @@ const TableRow: React.FC<ITableRowProps> = (props) => {
         </Typography>
       </Grid2>
       <Grid2 size={3}>
-        <ProductIcons sku={props.product.sku} />
+        <ProductIcons
+          sku={props.product.sku}
+          isFavourite={props.product.isFavourite}
+        />
       </Grid2>
     </Grid2>
   );

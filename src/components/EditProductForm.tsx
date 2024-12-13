@@ -32,6 +32,9 @@ const EditProductForm = () => {
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
 
+  //---------------------------------
+  const [blobUrls, setBlobUrls] = useState<string[]>([]);
+
   const selectedProduct = useAppSelector(
     (state) => state.products.selectedProduct
   );
@@ -55,6 +58,23 @@ const EditProductForm = () => {
 
       return files;
     };
+
+    //--------------------------------------------
+    const convertImagestoBlobUrls = (images: IProductImage[]) => {
+      const urls = images.map((image) => {
+        return URL.createObjectURL(
+          new Blob([image.data.data], { type: image.contentType })
+        );
+      });
+
+      return urls;
+    };
+
+    if (selectedProduct) {
+      setBlobUrls(convertImagestoBlobUrls(selectedProduct?.images));
+    }
+
+    //--------------------------------------------
 
     const loadImageFiles = (files: File[]) => {
       const fileArray = Array.from(files);
@@ -308,6 +328,12 @@ const EditProductForm = () => {
           </Button>
         </Grid2>
       </Grid2>
+
+      {/*  */}
+      <Box>
+        {blobUrls &&
+          blobUrls.map((url) => <img src={url} width="100" height="100" />)}
+      </Box>
     </Box>
   );
 };

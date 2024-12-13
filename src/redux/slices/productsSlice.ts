@@ -13,6 +13,7 @@ export interface Product {
   quantity: number;
   name: string;
   images: IProductImage[];
+  isFavourite: boolean;
   description: string;
 }
 
@@ -80,6 +81,17 @@ export const deleteProduct = createAsyncThunk(
       `${import.meta.env.VITE_API_BASE_URL}/api/products/${_id}`
     );
     return response.data.id;
+  }
+);
+
+export const changeFav = createAsyncThunk(
+  "products/changeFav",
+  async (id: string) => {
+    const _id = replaceLeadingHash(id);
+    const response = await axios.put(
+      `${import.meta.env.VITE_API_BASE_URL}/api/products/${_id}/fav`
+    );
+    return response.data;
   }
 );
 

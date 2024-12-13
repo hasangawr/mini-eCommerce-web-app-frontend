@@ -32,6 +32,7 @@ const SearchBar = () => {
             border: `1px solid ${theme.palette.bluePrimary.main}`,
             marginLeft: "0.75rem",
           }}
+          href="/fav-products"
         >
           <StarIcon />
         </Button>
