@@ -1,7 +1,7 @@
 import { Box, Button, TextField, Typography, useTheme } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { filterProducts } from "../redux/slices/productsSlice";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -15,6 +15,9 @@ const Search = (props: ISearchProps) => {
   const navigate = useNavigate();
 
   const [searchKey, setSearchKey] = useState<string>("");
+  // const [initialValue, setInitialValue] = useState<string>("");
+
+  // const searchFieldRef = useRef<HTMLInputElement | null>(null);
 
   const handleSubmit = () => {
     if (searchKey) {
@@ -22,9 +25,25 @@ const Search = (props: ISearchProps) => {
     }
   };
 
+  const handlePressEnter = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter") {
+      navigate(`/search-results/${searchKey.toLowerCase()}`);
+    }
+  };
+
   useEffect(() => {
     dispatch(filterProducts(searchKey));
   }, [dispatch, searchKey]);
+
+  // useEffect(() => {
+  //   if (location.href.includes("search-results")) {
+  //     setInitialValue(location.href.split("/").pop() as string);
+  //     if (searchFieldRef.current) {
+  //       searchFieldRef.current.setAttribute("value", initialValue);
+  //     }
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   return (
     <>
@@ -47,6 +66,7 @@ const Search = (props: ISearchProps) => {
           onChange={(e) => {
             setSearchKey(e.target.value.trim());
           }}
+          onKeyDown={handlePressEnter}
           sx={{
             "& .css-1lcalf0-MuiInputBase-root-MuiFilledInput-root": {
               backgroundColor: "transparent",
@@ -70,6 +90,7 @@ const Search = (props: ISearchProps) => {
                 borderRadius: "50px",
               },
               disableUnderline: true,
+              autoComplete: "off",
             },
           }}
         />

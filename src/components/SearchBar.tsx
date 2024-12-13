@@ -19,6 +19,7 @@ const SearchBar = () => {
 
   const [showResults, setShowResults] = useState<boolean>(false);
   const searchRef = useRef<HTMLDivElement | null>(null);
+  const searchSuggestionsRef = useRef<HTMLDivElement | null>(null);
 
   const filteredProducts = useAppSelector(
     (state) => state.products.filteredProducts
@@ -27,7 +28,8 @@ const SearchBar = () => {
   const handleClickOutside = (event: MouseEvent) => {
     if (
       searchRef.current &&
-      !searchRef.current.contains(event.target as Node)
+      !searchRef.current.contains(event.target as Node) &&
+      !searchSuggestionsRef.current?.contains(event.target as Node)
     ) {
       setShowResults(false);
     }
@@ -78,44 +80,48 @@ const SearchBar = () => {
         </Box>
       </Box>
       {filteredProducts.length > 0 ? (
-        <List
-          sx={{
-            position: "absolute", // Positioning over other elements
-            top: "16rem", // Below the search bar
-            left: "",
-            width: "50%",
-            zIndex: 10,
-            backgroundColor: "rgba(255, 255, 255, 0.9)", // Mildly transparent background
-            borderRadius: "8px",
-            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-            maxHeight: "300px",
-            overflowY: "auto",
-            paddingTop: "0",
-            paddingBottom: "0",
-          }}
-        >
-          {showResults &&
-            filteredProducts.map((product) => (
-              <ListItem
-                key={product.id}
-                sx={{
-                  borderBottom: "1px solid #f0f0f0",
-                  ":hover": {
-                    backgroundColor: theme.palette.graySecondary.main,
-                  },
-                  cursor: "pointer",
-                }}
-                onClick={() =>
-                  navigate(`/search-results/${product.name.toLowerCase()}`)
-                }
-              >
-                <ListItemText
-                  primary={product.name}
-                  secondary={product.description || "No description available"}
-                />
-              </ListItem>
-            ))}
-        </List>
+        <Box ref={searchSuggestionsRef}>
+          <List
+            sx={{
+              position: "absolute", // Positioning over other elements
+              top: "16rem", // Below the search bar
+              left: "",
+              width: "50%",
+              zIndex: 10,
+              backgroundColor: "rgba(255, 255, 255, 0.9)", // Mildly transparent background
+              borderRadius: "8px",
+              boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+              maxHeight: "300px",
+              overflowY: "auto",
+              paddingTop: "0",
+              paddingBottom: "0",
+            }}
+          >
+            {showResults &&
+              filteredProducts.map((product) => (
+                <ListItem
+                  key={product.id}
+                  sx={{
+                    borderBottom: "1px solid #f0f0f0",
+                    ":hover": {
+                      backgroundColor: theme.palette.graySecondary.main,
+                    },
+                    cursor: "pointer",
+                  }}
+                  onClick={() =>
+                    navigate(`/search-results/${product.name.toLowerCase()}`)
+                  }
+                >
+                  <ListItemText
+                    primary={product.name}
+                    secondary={
+                      product.description || "No description available"
+                    }
+                  />
+                </ListItem>
+              ))}
+          </List>
+        </Box>
       ) : (
         //<Typography>No products found</Typography>
         <></>
