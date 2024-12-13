@@ -22,6 +22,7 @@ export interface ProductsState {
   loading: boolean;
   error: string | null;
   selectedProduct: Product | null;
+  filteredProducts: Product[];
 }
 
 const initialState: ProductsState = {
@@ -29,6 +30,7 @@ const initialState: ProductsState = {
   loading: false,
   error: null,
   selectedProduct: null,
+  filteredProducts: [],
 };
 
 export interface ProductUpdateActionProps {
@@ -105,11 +107,15 @@ const productsSlice = createSlice({
         product.name.toLowerCase().includes(keyword)
       );
     },
-    filterProducts: (
-      state,
-      action: PayloadAction<(product: Product) => boolean>
-    ) => {
-      state.items = state.items.filter(action.payload);
+    filterProducts: (state, action: PayloadAction<string>) => {
+      const keyword = action.payload.trim().toLowerCase();
+      if (keyword) {
+        state.filteredProducts = state.items.filter((product) =>
+          product.name.toLowerCase().includes(keyword)
+        );
+      } else {
+        state.filteredProducts = [];
+      }
     },
     selectProduct: (state, action: PayloadAction<string>) => {
       const productSku = action.payload;
