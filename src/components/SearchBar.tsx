@@ -10,16 +10,40 @@ import {
 import Search from "./Search";
 import StarIcon from "./StarIcon";
 import { useAppSelector } from "../redux/hooks";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 
 const SearchBar = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
+
+  const [showResults, setShowResults] = useState<boolean>(false);
+  const searchRef = useRef<HTMLDivElement | null>(null);
+
   const filteredProducts = useAppSelector(
     (state) => state.products.filteredProducts
   );
 
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      searchRef.current &&
+      !searchRef.current.contains(event.target as Node)
+    ) {
+      setShowResults(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <>
       <Box
+        ref={searchRef}
         sx={{
           display: "flex",
           justifyContent: "space-between",
@@ -29,7 +53,7 @@ const SearchBar = () => {
           position: "relative",
         }}
       >
-        <Search />
+        <Search setShowResults={setShowResults} />
         <Box sx={{ display: "flex", maxHeight: "3.5rem" }}>
           <Button
             sx={{
@@ -66,23 +90,31 @@ const SearchBar = () => {
             boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
             maxHeight: "300px",
             overflowY: "auto",
+            paddingTop: "0",
+            paddingBottom: "0",
           }}
         >
-          {filteredProducts.map((product) => (
-            <ListItem
-              key={product.id}
-              sx={{
-                borderBottom: "1px solid #f0f0f0",
-                ":hover": { backgroundColor: theme.palette.graySecondary.main },
-                cursor: "pointer",
-              }}
-            >
-              <ListItemText
-                primary={product.name}
-                secondary={product.description || "No description available"}
-              />
-            </ListItem>
-          ))}
+          {showResults &&
+            filteredProducts.map((product) => (
+              <ListItem
+                key={product.id}
+                sx={{
+                  borderBottom: "1px solid #f0f0f0",
+                  ":hover": {
+                    backgroundColor: theme.palette.graySecondary.main,
+                  },
+                  cursor: "pointer",
+                }}
+                onClick={() =>
+                  navigate(`/search-results/${product.name.toLowerCase()}`)
+                }
+              >
+                <ListItemText
+                  primary={product.name}
+                  secondary={product.description || "No description available"}
+                />
+              </ListItem>
+            ))}
         </List>
       ) : (
         //<Typography>No products found</Typography>

@@ -14,7 +14,10 @@ function App() {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<ProductsPage />} />
           <Route path="fav-products" element={<FavouriteProductsPage />} />
-          <Route path="search-results" element={<SearchResultsPage />} />
+          <Route
+            path="search-results/:keyword"
+            element={<SearchResultsPage />}
+          />
           <Route path="new-product" element={<NewProductPage />} />
           <Route path="edit-product/:id" element={<EditProductPage />} />
         </Route>

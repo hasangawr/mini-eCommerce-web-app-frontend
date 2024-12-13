@@ -1,6 +1,12 @@
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 
-const SearchResult = () => {
+interface ISearchResultProps {
+  sku: string;
+  name: string;
+  description: string;
+}
+
+const SearchResult = (props: ISearchResultProps) => {
   const theme = useTheme();
 
   return (
@@ -16,18 +22,17 @@ const SearchResult = () => {
           color={theme.palette.bluePrimary.main}
           sx={{ marginBottom: "0.625rem" }}
         >
-          #CA25
+          {props.sku}
         </Typography>
         <Typography
           variant="h2"
           color={theme.palette.blackPrimary.main}
           sx={{ marginBottom: "0.625rem" }}
         >
-          Product-name
+          {props.name}
         </Typography>
         <Typography variant="body2" color={theme.palette.grayPrimary.main}>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Eligendi
-          libero quod aperiam. Possimus, ratione voluptate?
+          {props.description}
         </Typography>
       </Box>
       <Box>

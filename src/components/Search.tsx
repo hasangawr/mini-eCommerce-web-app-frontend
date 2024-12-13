@@ -3,12 +3,24 @@ import SearchIcon from "@mui/icons-material/Search";
 import { filterProducts } from "../redux/slices/productsSlice";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-const Search = () => {
+interface ISearchProps {
+  setShowResults: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const Search = (props: ISearchProps) => {
   const theme = useTheme();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [searchKey, setSearchKey] = useState<string>("");
+
+  const handleSubmit = () => {
+    if (searchKey) {
+      navigate(`/search-results/${searchKey.toLowerCase()}`);
+    }
+  };
 
   useEffect(() => {
     dispatch(filterProducts(searchKey));
@@ -31,8 +43,9 @@ const Search = () => {
           variant="filled"
           placeholder="Search for products"
           fullWidth
+          onFocus={() => props.setShowResults(true)}
           onChange={(e) => {
-            setSearchKey(e.target.value);
+            setSearchKey(e.target.value.trim());
           }}
           sx={{
             "& .css-1lcalf0-MuiInputBase-root-MuiFilledInput-root": {
@@ -73,6 +86,7 @@ const Search = () => {
             height: "2.8rem",
             marginRight: "1rem",
           }}
+          onClick={handleSubmit}
         >
           <SearchIcon />
           <Typography variant="h2">Search</Typography>
