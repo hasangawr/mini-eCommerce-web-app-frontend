@@ -55,6 +55,22 @@ const ProductForm = () => {
     }
   };
 
+  // considering first image as the thumbnail
+  // move selected image to front of the array
+  const setThumbnail = (index: number) => {
+    const prevArray = [...previews];
+    const imgArray = [...images];
+
+    const thumbnailPrev = prevArray.splice(index, 1)[0];
+    const thumbnailImg = imgArray.splice(index, 1)[0];
+
+    prevArray.unshift(thumbnailPrev);
+    imgArray.unshift(thumbnailImg);
+
+    setPreviews(prevArray);
+    setImages(imgArray);
+  };
+
   return (
     <Box sx={{ marginTop: "2.5rem" }}>
       <Grid2 container spacing={2}>
@@ -69,6 +85,15 @@ const ProductForm = () => {
                 backgroundColor: theme.palette.graySecondary.main,
                 maxHeight: "2.8rem",
                 width: "25rem",
+              }}
+              slotProps={{
+                input: {
+                  sx: {
+                    backgroundColor: theme.palette.graySecondary.main,
+                    color: theme.palette.grayPrimary.main,
+                    fontSize: "0.875rem",
+                  },
+                },
               }}
               variant="outlined"
               onChange={(e) => {
@@ -90,6 +115,15 @@ const ProductForm = () => {
                 maxHeight: "2.8rem",
                 width: "25rem",
               }}
+              slotProps={{
+                input: {
+                  sx: {
+                    backgroundColor: theme.palette.graySecondary.main,
+                    color: theme.palette.grayPrimary.main,
+                    fontSize: "0.875rem",
+                  },
+                },
+              }}
               variant="outlined"
               onChange={(e) => {
                 setProductName(e.target.value);
@@ -108,6 +142,15 @@ const ProductForm = () => {
                 backgroundColor: theme.palette.graySecondary.main,
                 maxHeight: "2.8rem",
                 width: "25rem",
+              }}
+              slotProps={{
+                input: {
+                  sx: {
+                    backgroundColor: theme.palette.graySecondary.main,
+                    color: theme.palette.grayPrimary.main,
+                    fontSize: "0.875rem",
+                  },
+                },
               }}
               variant="outlined"
               onChange={(e) => {
@@ -143,6 +186,8 @@ const ProductForm = () => {
               input: {
                 sx: {
                   backgroundColor: theme.palette.graySecondary.main,
+                  color: theme.palette.grayPrimary.main,
+                  fontSize: "0.875rem",
                 },
               },
             }}
@@ -195,12 +240,51 @@ const ProductForm = () => {
               }}
             >
               {previews.map((preview, index) => (
-                <img
-                  key={index}
-                  src={preview}
-                  alt={`Preview ${index}`}
-                  width={100}
-                />
+                <Box
+                  onClick={() => {
+                    setThumbnail(index);
+                  }}
+                  sx={{
+                    position: "relative",
+                    bgcolor: "grey.300",
+                    overflow: "hidden",
+                    "&:hover .overlay": {
+                      opacity: 1,
+                    },
+                    cursor: "pointer",
+                  }}
+                >
+                  <Box
+                    className="overlay"
+                    sx={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      bgcolor: "rgba(0, 0, 0, 0.5)",
+                      opacity: 0,
+                      transition: "opacity 0.3s ease",
+                      color: "white",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      textAlign: "center",
+                    }}
+                  >
+                    {index === 0 ? (
+                      <Typography variant="body2">Thumbnail</Typography>
+                    ) : (
+                      <Typography variant="body2">Set as Thumbnail</Typography>
+                    )}
+                  </Box>
+                  <img
+                    key={index}
+                    src={preview}
+                    alt={`Preview ${index}`}
+                    width={100}
+                  />
+                </Box>
               ))}
             </Box>
           </Box>
