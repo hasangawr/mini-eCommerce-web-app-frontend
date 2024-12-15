@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Grid2,
+  IconButton,
   Link,
   Stack,
   TextField,
@@ -13,6 +14,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "../redux/store";
 import { addProduct, fetchProducts } from "../redux/slices/productsSlice";
 import { useNavigate } from "react-router-dom";
+import { Delete } from "@mui/icons-material";
 
 const ProductForm = () => {
   const theme = useTheme();
@@ -66,6 +68,17 @@ const ProductForm = () => {
 
     prevArray.unshift(thumbnailPrev);
     imgArray.unshift(thumbnailImg);
+
+    setPreviews(prevArray);
+    setImages(imgArray);
+  };
+
+  const handleRemove = (index: number) => {
+    const prevArray = [...previews];
+    const imgArray = [...images];
+
+    prevArray.splice(index, 1);
+    imgArray.splice(index, 1);
 
     setPreviews(prevArray);
     setImages(imgArray);
@@ -241,21 +254,22 @@ const ProductForm = () => {
             >
               {previews.map((preview, index) => (
                 <Box
-                  onClick={() => {
-                    setThumbnail(index);
-                  }}
                   sx={{
                     position: "relative",
                     bgcolor: "grey.300",
-                    overflow: "hidden",
-                    "&:hover .overlay": {
-                      opacity: 1,
+                    //overflow: "hidden",
+                    "&:hover .remove-button": {
+                      opacity: 1, // Make the button visible on hover
                     },
                     cursor: "pointer",
+                    marginRight: "1rem",
                   }}
                 >
                   <Box
                     className="overlay"
+                    onClick={() => {
+                      setThumbnail(index);
+                    }}
                     sx={{
                       position: "absolute",
                       top: 0,
@@ -270,12 +284,17 @@ const ProductForm = () => {
                       justifyContent: "center",
                       alignItems: "center",
                       textAlign: "center",
+                      "&:hover": {
+                        opacity: 1,
+                      },
                     }}
                   >
                     {index === 0 ? (
                       <Typography variant="body2">Thumbnail</Typography>
                     ) : (
-                      <Typography variant="body2">Set as Thumbnail</Typography>
+                      <Typography variant="body2">
+                        Click to set as thumbnail
+                      </Typography>
                     )}
                   </Box>
                   <img
@@ -284,6 +303,29 @@ const ProductForm = () => {
                     alt={`Preview ${index}`}
                     width={100}
                   />
+
+                  <IconButton
+                    className="remove-button"
+                    sx={{
+                      position: "absolute",
+                      top: "-30%",
+                      right: "-20%",
+                      bgcolor: "rgba(255, 255, 255, 0.8)", // Semi-transparent background
+                      opacity: 0, // Initially hidden
+                      transition: "opacity 0.3s ease",
+                      zIndex: 2, // Ensure the button is above both the image and the overlay
+                      "&:hover": {
+                        bgcolor: "rgba(255, 0, 0, 0.8)", // Button hover effect
+                        color: "white",
+                      },
+                      "&:hover .overlay": {
+                        opacity: 0,
+                      },
+                    }}
+                    onClick={() => handleRemove(index)}
+                  >
+                    <Delete sx={{ width: "1rem", height: "1rem" }} />
+                  </IconButton>
                 </Box>
               ))}
             </Box>
