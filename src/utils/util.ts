@@ -15,4 +15,20 @@ const arrayBufferToBase64 = (buffer: ArrayBuffer) => {
   return window.btoa(binary);
 };
 
-export { replaceLeadingHash, arrayBufferToBase64 };
+const createFileFromImage = (
+  contentType: string,
+  data: ArrayBuffer,
+  fileName: string
+): File => {
+  // Convert the ArrayBuffer to a Blob
+  const blob = new Blob([new Uint8Array(data)], {
+    type: contentType,
+  });
+
+  // Create a File from the Blob
+  const file = new File([blob], fileName, { type: contentType });
+
+  return file;
+};
+
+export { replaceLeadingHash, arrayBufferToBase64, createFileFromImage };

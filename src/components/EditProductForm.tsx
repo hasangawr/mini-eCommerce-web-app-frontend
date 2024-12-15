@@ -17,6 +17,7 @@ import {
 } from "../redux/slices/productsSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { createFileFromImage } from "../utils/util";
 
 const EditProductForm = () => {
   const theme = useTheme();
@@ -31,9 +32,6 @@ const EditProductForm = () => {
   const [description, setDescription] = useState<string>("");
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
-
-  //---------------------------------
-  const [blobUrls, setBlobUrls] = useState<string[]>([]);
 
   const selectedProduct = useAppSelector(
     (state) => state.products.selectedProduct
@@ -50,51 +48,45 @@ const EditProductForm = () => {
   }, [dispatch, id]);
 
   useEffect(() => {
-    const convertImagestoFiles = (images: IProductImage[]) => {
-      const files = images.map((image, index) => {
-        const blob = new Blob([image.data.data], { type: image.contentType });
-        return new File([blob], `img${index}`, { type: image.contentType });
-      });
+    const createFilesFromImages = (productImages: IProductImage[]) => {
+      if (productImages.length !== 0) {
+        const imageFiles = productImages.map((productImage, index) => {
+          return createFileFromImage(
+            productImage.contentType,
+            productImage.data.data,
+            `imgFile${index}`
+          );
+        });
 
-      return files;
-    };
-
-    //--------------------------------------------
-    const convertImagestoBlobUrls = (images: IProductImage[]) => {
-      const urls = images.map((image) => {
-        return URL.createObjectURL(
-          new Blob([image.data.data], { type: image.contentType })
-        );
-      });
-
-      return urls;
-    };
-
-    if (selectedProduct) {
-      setBlobUrls(convertImagestoBlobUrls(selectedProduct?.images));
-    }
-
-    //--------------------------------------------
-
-    const loadImageFiles = (files: File[]) => {
-      const fileArray = Array.from(files);
-      setImages((prevImages) => [...prevImages, ...fileArray]);
-
-      // Generate image previews
-      const newPreviews = fileArray.map((file) => URL.createObjectURL(file));
-      setPreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
-    };
-
-    if (selectedProduct) {
-      if (selectedProduct.images.length !== 0) {
-        const files = convertImagestoFiles(selectedProduct.images);
-        loadImageFiles(files);
+        return imageFiles;
       }
+
+      return [];
+    };
+
+    const loadInitialImages = (files: File[]) => {
+      if (files) {
+        const fileArray = Array.from(files);
+        setImages(() => [...fileArray]);
+
+        // Generate image previews
+        const newPreviews = fileArray.map((file) => URL.createObjectURL(file));
+        setPreviews(() => [...newPreviews]);
+
+        console.log("initial");
+      }
+    };
+
+    if (selectedProduct) {
+      const filesFromImages = createFilesFromImages(selectedProduct.images);
 
       setSku(selectedProduct.sku);
       setProductName(selectedProduct.name);
       setQty(selectedProduct.quantity);
       setDescription(selectedProduct.description);
+      setImages(filesFromImages);
+
+      loadInitialImages(filesFromImages);
     }
   }, [selectedProduct]);
 
@@ -104,9 +96,13 @@ const EditProductForm = () => {
       const fileArray = Array.from(files);
       setImages((prevImages) => [...prevImages, ...fileArray]);
 
+      console.log("images: ", images.length);
+
       // Generate image previews
       const newPreviews = fileArray.map((file) => URL.createObjectURL(file));
       setPreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
+
+      console.log("previews: ", previews.length);
     }
   };
 
@@ -328,12 +324,6 @@ const EditProductForm = () => {
           </Button>
         </Grid2>
       </Grid2>
-
-      {/*  */}
-      <Box>
-        {blobUrls &&
-          blobUrls.map((url) => <img src={url} width="100" height="100" />)}
-      </Box>
     </Box>
   );
 };
